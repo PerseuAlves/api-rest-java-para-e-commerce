@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Usuario;
 import br.com.pereira.LojaDeDoces.repository.UsuarioRepository;
+import br.com.pereira.LojaDeDoces.services.EmailService;
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +28,9 @@ public class UsuarioController {
 
 	@Autowired
     private UsuarioRepository uRep;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	@GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<Usuario> getUsuario(@PathVariable(value = "idUsuario") int idUsuario) throws ResourceNotFoundException {
@@ -50,6 +54,7 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().body("Usuario já presente no banco");
 		} else {
 			uRep.save(u);
+			emailService.sendEmailConfirmation(u);
 	        return ResponseEntity.ok().body("Usuario inserido com sucesso");
 		}
     }
@@ -57,6 +62,7 @@ public class UsuarioController {
 	@PutMapping("/usuario")
 	public ResponseEntity<String> putUsuario(@Valid @RequestBody Usuario u) {
 		uRep.save(u);
+		emailService.sendEmailConfirmation(u);
         return ResponseEntity.ok().body("Usuario atualizado com sucesso");
     }
 	
