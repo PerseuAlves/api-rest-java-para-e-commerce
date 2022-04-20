@@ -13,26 +13,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Adm;
-import br.com.pereira.LojaDeDoces.repository.AdmRepository;
+import br.com.pereira.LojaDeDoces.services.AdmService;
 
 @RestController
 @RequestMapping("/api")
 public class AdmController {
 
 	@Autowired
-    private AdmRepository aRep;
+    private AdmService admService;
 	
 	@GetMapping("/adm/{idAdm}")
     public ResponseEntity<Adm> getAdm(@PathVariable(value = "idAdm") int idAdm) throws ResourceNotFoundException {
-		Adm adm = aRep.findById(idAdm).orElseThrow(
-                () -> new ResourceNotFoundException(idAdm + " inválido")
-        );
+		Adm adm = admService.findById(idAdm);
         return ResponseEntity.ok().body(adm);
     }
 	
 	@PutMapping("/adm")
 	public ResponseEntity<String> putAdm(@Valid @RequestBody Adm a) {
-        aRep.save(a);
+		admService.save(a);
         return ResponseEntity.ok().body("Adm atualizado com sucesso");
     }
 }

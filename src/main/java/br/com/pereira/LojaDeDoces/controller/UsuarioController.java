@@ -19,56 +19,54 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Usuario;
-import br.com.pereira.LojaDeDoces.repository.UsuarioRepository;
 import br.com.pereira.LojaDeDoces.services.EmailService;
+import br.com.pereira.LojaDeDoces.services.UsuarioService;
 
 @RestController
 @RequestMapping("/api")
 public class UsuarioController {
-
+	
 	@Autowired
-    private UsuarioRepository uRep;
+	private UsuarioService usuarioService;
 	
 	@Autowired
 	private EmailService emailService;
 	
 	@GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<Usuario> getUsuario(@PathVariable(value = "idUsuario") int idUsuario) throws ResourceNotFoundException {
-        Usuario usuario = uRep.findById(idUsuario).orElseThrow(
-                () -> new ResourceNotFoundException(idUsuario + " inválido")
-        );
+        Usuario usuario = usuarioService.findById(idUsuario);
         return ResponseEntity.ok().body(usuario);
     }
 	
 	@GetMapping("/usuario")
     public ResponseEntity<List<Usuario>> getAllUsuario() throws ResourceNotFoundException {
 		List<Usuario> listaUsuario = new ArrayList<Usuario>();
-		listaUsuario = uRep.findAll();
+		listaUsuario = usuarioService.findAll();
         return ResponseEntity.ok().body(listaUsuario);
     }
 	
 	@PostMapping("/usuario")
     public ResponseEntity<String> postUsuario(@Valid @RequestBody Usuario u) {
-		Optional<Usuario> usuario = uRep.findById(u.getId());
+		Optional<Usuario> usuario = usuarioService.findByIdForPostMethod(u.getId());
 		if(usuario.isPresent()) {
 			return ResponseEntity.badRequest().body("Usuario já presente no banco");
 		} else {
-			uRep.save(u);
-			emailService.sendEmailConfirmation(u);
-	        return ResponseEntity.ok().body("Usuario inserido com sucesso");
+			usuarioService.save(u);
+			String emailStatus = emailService.sendEmailConfirmation(u);
+	        return ResponseEntity.ok().body("Usuario inserido com sucesso\n" + emailStatus);
 		}
     }
 	
 	@PutMapping("/usuario")
 	public ResponseEntity<String> putUsuario(@Valid @RequestBody Usuario u) {
-		uRep.save(u);
-		emailService.sendEmailConfirmation(u);
-        return ResponseEntity.ok().body("Usuario atualizado com sucesso");
+		usuarioService.save(u);
+		String emailStatus = emailService.sendEmailConfirmation(u);
+        return ResponseEntity.ok().body("Usuario atualizado com sucesso\n" + emailStatus);
     }
 	
 	@DeleteMapping("/usuario")
 	public ResponseEntity<String> deleteUsuario(@Valid @RequestBody Usuario u) {
-		uRep.delete(u);
+		usuarioService.delete(u);
         return ResponseEntity.ok().body("Usuario deletado com sucesso");
     }
 }

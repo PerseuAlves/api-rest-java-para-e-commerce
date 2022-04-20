@@ -26,8 +26,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "Telefone")
 @NamedStoredProcedureQuery(
-        name = "Telefone.spPutNewTel",
-        procedureName = "sp_putnewtel",
+        name = "Telefone.putNewTelefone",
+        procedureName = "sp_putNewTelefone",
         parameters = {
                 @StoredProcedureParameter(mode = ParameterMode.IN, name = "numAntigo", type = String.class),
                 @StoredProcedureParameter(mode = ParameterMode.IN, name = "numNovo", type = String.class),

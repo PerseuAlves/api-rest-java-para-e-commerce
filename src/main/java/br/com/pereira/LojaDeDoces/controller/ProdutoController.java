@@ -19,76 +19,68 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Produto;
-import br.com.pereira.LojaDeDoces.repository.ProdutoRepository;
+import br.com.pereira.LojaDeDoces.services.ProdutoService;
 
 @RestController
 @RequestMapping("/api")
 public class ProdutoController {
 
 	@Autowired
-    private ProdutoRepository pRep;
+	private ProdutoService produtoService;
 	
 	@GetMapping("/produto")
     public ResponseEntity<List<Produto>> getAllProduto() throws ResourceNotFoundException {
 		List<Produto> listaProduto = new ArrayList<Produto>();
-		listaProduto = pRep.findAll();
+		listaProduto = produtoService.findAll();
         return ResponseEntity.ok().body(listaProduto);
     }
 	
 	@GetMapping("/produto/{idProduto}")
     public ResponseEntity<Produto> getProduto(@PathVariable(value = "idProduto") int idProduto) throws ResourceNotFoundException {
-        Produto produto = pRep.findById(idProduto).orElseThrow(
-                () -> new ResourceNotFoundException(idProduto + " inválido")
-        );
+        Produto produto = produtoService.findById(idProduto);
         return ResponseEntity.ok().body(produto);
     }
 	
 	@GetMapping("/produto/titulo/{tituloProduto}")
     public ResponseEntity<Produto> getProdutoByTitulo(@PathVariable(value = "tituloProduto") String tituloProduto) throws ResourceNotFoundException {
-        Produto produto = pRep.findByTitulo(tituloProduto).orElseThrow(
-                () -> new ResourceNotFoundException(tituloProduto + " inválido")
-        );
+        Produto produto = produtoService.findByTitulo(tituloProduto);
         return ResponseEntity.ok().body(produto);
     }
 	
 	@GetMapping("/produto/byHighPrice")
     public ResponseEntity<List<Produto>> getAllProdutoByHighPrice() throws ResourceNotFoundException {
 		List<Produto> listaProduto = new ArrayList<Produto>();
-		listaProduto = pRep.findAllByHighPrice().orElseThrow(
-				() -> new ResourceNotFoundException("Erro ao buscar todos os produtos pelo maior preco")
-		);
+		listaProduto = produtoService.findAllByHighPrice();
         return ResponseEntity.ok().body(listaProduto);
     }
 	
 	@GetMapping("/produto/byLowerPrice")
     public ResponseEntity<List<Produto>> getAllProdutoByLowerPrice() throws ResourceNotFoundException {
 		List<Produto> listaProduto = new ArrayList<Produto>();
-		listaProduto = pRep.findAllByLowerPrice().orElseThrow(
-				() -> new ResourceNotFoundException("Erro ao buscar todos os produtos pelo menor preco")
-		);
+		listaProduto = produtoService.findAllByLowerPrice();
         return ResponseEntity.ok().body(listaProduto);
     }
 	
 	@PostMapping("/produto")
     public ResponseEntity<String> postProduto(@Valid @RequestBody Produto p) {
-		Optional<Produto> produto = pRep.findById( p.getId());
+		Optional<Produto> produto = produtoService.findByIdForOptional(p.getId());
 		if(produto.isPresent()) {
 			return ResponseEntity.badRequest().body("Produto já presente no banco");
 		} else {
-			pRep.save( p);
+			produtoService.save(p);
 	        return ResponseEntity.ok().body("Produto inserido com sucesso");
 		}
     }
 	
 	@PutMapping("/produto")
 	public ResponseEntity<String> putProduto(@Valid @RequestBody Produto p) {
-        pRep.save( p);
+        produtoService.save(p);
         return ResponseEntity.ok().body("Produto atualizado com sucesso");
     }
 	
 	@DeleteMapping("/produto")
 	public ResponseEntity<String> deleteProduto(@Valid @RequestBody Produto p) {
-        pRep.delete( p);
+        produtoService.delete(p);
         return ResponseEntity.ok().body("Produto deletado com sucesso");
     }
 }

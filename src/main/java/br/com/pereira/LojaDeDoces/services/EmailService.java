@@ -19,9 +19,14 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender emailSender;
 
-	public void sendEmailConfirmation(Usuario usuario) {
-		SimpleMailMessage sm = prepareSimpleMailMessageFromUsuario(usuario);
-		emailSender.send(sm);
+	public String sendEmailConfirmation(Usuario usuario) {
+		try {
+			SimpleMailMessage sm = prepareSimpleMailMessageFromUsuario(usuario);
+			emailSender.send(sm);
+			return "Email enviado com sucesso";
+		} catch (Exception e) {
+			return "Email não enviado";
+		}
 	}
 
 	private SimpleMailMessage prepareSimpleMailMessageFromUsuario(Usuario usuario) {

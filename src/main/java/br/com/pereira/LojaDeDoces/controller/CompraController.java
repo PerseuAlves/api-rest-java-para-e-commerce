@@ -18,42 +18,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Compra;
-import br.com.pereira.LojaDeDoces.repository.CompraRepository;
+import br.com.pereira.LojaDeDoces.services.CompraService;
 
 @RestController
 @RequestMapping("/api")
 public class CompraController {
 
 	@Autowired
-    private CompraRepository cRep;
+    private CompraService CompraService;
 	
 	@GetMapping("/compra")
     public ResponseEntity<List<Compra>> getAllCompra() throws ResourceNotFoundException {
-		List<Compra> listaAviso = new ArrayList<Compra>();
-		listaAviso = cRep.findAll();
-        return ResponseEntity.ok().body(listaAviso);
+		List<Compra> listaCompra = new ArrayList<Compra>();
+		listaCompra = CompraService.findAll();
+        return ResponseEntity.ok().body(listaCompra);
     }
 	
 	@PostMapping("/compra")
     public ResponseEntity<String> postCompra(@Valid @RequestBody Compra c) {
-		Optional<Compra> compra = cRep.findById(c.getId());
+		Optional<Compra> compra = CompraService.findById(c.getId());
 		if(compra.isPresent()) {
 			return ResponseEntity.badRequest().body("Compra já presente no banco");
 		} else {
-			cRep.save(c);
+			CompraService.save(c);
 	        return ResponseEntity.ok().body("Compra inserido com sucesso");
 		}
     }
 	
 	@PutMapping("/compra")
 	public ResponseEntity<String> putCompra(@Valid @RequestBody Compra c) {
-        cRep.save(c);
+        CompraService.save(c);
         return ResponseEntity.ok().body("Compra atualizado com sucesso");
     }
 	
 	@DeleteMapping("/compra")
 	public ResponseEntity<String> deleteCompra(@Valid @RequestBody Compra c) {
-        cRep.delete(c);
+        CompraService.delete(c);
         return ResponseEntity.ok().body("Compra deletado com sucesso");
     }
 }

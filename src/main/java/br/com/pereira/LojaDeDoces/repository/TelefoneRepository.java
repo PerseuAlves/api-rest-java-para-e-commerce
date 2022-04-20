@@ -8,6 +8,6 @@ import br.com.pereira.LojaDeDoces.model.Telefone;
 
 public interface TelefoneRepository extends JpaRepository<Telefone, String> {
 
-	@Procedure(name = "Telefone.spPutNewTel")
-    String spPutNewTel(@Param("numAntigo") String numAntigo, @Param("numNovo") String numNovo);
+	@Procedure(name = "Telefone.putNewTelefone")
+    String putNewTelefone(@Param("numAntigo") String numAntigo, @Param("numNovo") String numNovo);
 }

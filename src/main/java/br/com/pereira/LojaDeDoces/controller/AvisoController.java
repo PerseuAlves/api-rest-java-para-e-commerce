@@ -1,6 +1,5 @@
 package br.com.pereira.LojaDeDoces.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,50 +18,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Aviso;
-import br.com.pereira.LojaDeDoces.repository.AvisoRepository;
+import br.com.pereira.LojaDeDoces.services.AvisoService;
 
 @RestController
 @RequestMapping("/api")
 public class AvisoController {
 
 	@Autowired
-    private AvisoRepository aRep;
+	AvisoService avisoService;
 	
 	@GetMapping("/aviso/{idAviso}")
     public ResponseEntity<Aviso> getAviso(@PathVariable(value = "idAviso") int idAviso) throws ResourceNotFoundException {
-        Aviso aviso = aRep.findById(idAviso).orElseThrow(
-                () -> new ResourceNotFoundException(idAviso + " inválido")
-        );
+        Aviso aviso = avisoService.findById(idAviso);
         return ResponseEntity.ok().body(aviso);
     }
 	
 	@GetMapping("/aviso")
     public ResponseEntity<List<Aviso>> getAllAviso() throws ResourceNotFoundException {
-		List<Aviso> listaAviso = new ArrayList<Aviso>();
-		listaAviso = aRep.findAll();
+		List<Aviso> listaAviso = avisoService.findAll();
         return ResponseEntity.ok().body(listaAviso);
     }
 	
 	@PostMapping("/aviso")
     public ResponseEntity<String> postAviso(@Valid @RequestBody Aviso a) {
-		Optional<Aviso> aviso = aRep.findById(a.getId());
+		Optional<Aviso> aviso = avisoService.findByIdOptional(a.getId());
 		if(aviso.isPresent()) {
 			return ResponseEntity.badRequest().body("Aviso já presente no banco");
 		} else {
-			aRep.save(a);
+			avisoService.save(a);
 	        return ResponseEntity.ok().body("Aviso inserido com sucesso");
 		}
     }
 	
 	@PutMapping("/aviso")
 	public ResponseEntity<String> putAviso(@Valid @RequestBody Aviso a) {
-        aRep.save(a);
+        avisoService.save(a);
         return ResponseEntity.ok().body("Aviso atualizado com sucesso");
     }
 	
 	@DeleteMapping("/aviso")
 	public ResponseEntity<String> deleteAviso(@Valid @RequestBody Aviso a) {
-        aRep.delete(a);
+        avisoService.delete(a);
         return ResponseEntity.ok().body("Aviso deletado com sucesso");
     }
 }
