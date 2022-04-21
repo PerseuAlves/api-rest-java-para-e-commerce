@@ -45,25 +45,25 @@ public class TelefoneController {
     public ResponseEntity<String> postTelefone(@Valid @RequestBody Telefone t) {
 		Optional<Telefone> telefone = telefoneService.findByIdForOptional(t.getNumero());
 		if(telefone.isPresent()) {
-			return ResponseEntity.badRequest().body("Telefone já presente no banco");
+			return ResponseEntity.badRequest().body("{\"status\":\"Telefone já presente no banco\"}");
 		} else {
 			telefoneService.save(t);
-	        return ResponseEntity.ok().body("Telefone inserido com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Telefone inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/telefone")
 	public ResponseEntity<String> putTelefone(@Valid @RequestBody Telefone[] t) {
 		if(t[0].getNumero().isBlank() || t[1].getNumero().isBlank()) {
-			return ResponseEntity.ok().body("Telefone inválido");
+			return ResponseEntity.ok().body("{\"status\":\"Telefone inválido");
 		}
 		telefoneService.putNewTelefone(t[0].getNumero(), t[1].getNumero());
-        return ResponseEntity.ok().body("Telefone atualizado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Telefone atualizado com sucesso\"}");
     }
 	
 	@DeleteMapping("/telefone")
 	public ResponseEntity<String> deleteTelefone(@Valid @RequestBody Telefone t) {
 		telefoneService.delete(t);
-        return ResponseEntity.ok().body("Telefone deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Telefone deletado com sucesso\"}");
     }
 }

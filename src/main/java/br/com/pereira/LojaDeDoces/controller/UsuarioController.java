@@ -49,11 +49,11 @@ public class UsuarioController {
     public ResponseEntity<String> postUsuario(@Valid @RequestBody Usuario u) {
 		Optional<Usuario> usuario = usuarioService.findByIdForPostMethod(u.getId());
 		if(usuario.isPresent()) {
-			return ResponseEntity.badRequest().body("Usuario já presente no banco");
+			return ResponseEntity.badRequest().body("{\"status\":\"Usuario já presente no banco\"}");
 		} else {
 			usuarioService.save(u);
 			String emailStatus = emailService.sendEmailConfirmation(u);
-	        return ResponseEntity.ok().body("Usuario inserido com sucesso\n" + emailStatus);
+	        return ResponseEntity.ok().body("{\"status\":\"Usuario inserido com sucesso. " + emailStatus + "\"}");
 		}
     }
 	
@@ -61,12 +61,12 @@ public class UsuarioController {
 	public ResponseEntity<String> putUsuario(@Valid @RequestBody Usuario u) {
 		usuarioService.save(u);
 		String emailStatus = emailService.sendEmailConfirmation(u);
-        return ResponseEntity.ok().body("Usuario atualizado com sucesso\n" + emailStatus);
+        return ResponseEntity.ok().body("{\"status\":\"Usuario atualizado com sucesso. " + emailStatus + "\"}");
     }
 	
 	@DeleteMapping("/usuario")
 	public ResponseEntity<String> deleteUsuario(@Valid @RequestBody Usuario u) {
 		usuarioService.delete(u);
-        return ResponseEntity.ok().body("Usuario deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Usuario deletado com sucesso\"}");
     }
 }

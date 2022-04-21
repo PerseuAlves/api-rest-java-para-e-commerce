@@ -43,10 +43,10 @@ public class AvisoController {
     public ResponseEntity<String> postAviso(@Valid @RequestBody Aviso a) {
 		Optional<Aviso> aviso = avisoService.findByIdOptional(a.getId());
 		if(aviso.isPresent()) {
-			return ResponseEntity.badRequest().body("Aviso já presente no banco");
+			return ResponseEntity.badRequest().body("{\"status\":\"Aviso já presente no banco\"}");
 		} else {
 			avisoService.save(a);
-	        return ResponseEntity.ok().body("Aviso inserido com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Aviso inserido com sucesso\"}");
 		}
     }
 	
@@ -59,6 +59,6 @@ public class AvisoController {
 	@DeleteMapping("/aviso")
 	public ResponseEntity<String> deleteAviso(@Valid @RequestBody Aviso a) {
         avisoService.delete(a);
-        return ResponseEntity.ok().body("Aviso deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Aviso deletado com sucesso\"}");
     }
 }

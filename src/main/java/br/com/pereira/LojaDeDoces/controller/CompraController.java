@@ -38,22 +38,22 @@ public class CompraController {
     public ResponseEntity<String> postCompra(@Valid @RequestBody Compra c) {
 		Optional<Compra> compra = CompraService.findById(c.getId());
 		if(compra.isPresent()) {
-			return ResponseEntity.badRequest().body("Compra já presente no banco");
+			return ResponseEntity.badRequest().body("{\"status\":\"Compra já presente no banco\"}");
 		} else {
 			CompraService.save(c);
-	        return ResponseEntity.ok().body("Compra inserido com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Compra inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/compra")
 	public ResponseEntity<String> putCompra(@Valid @RequestBody Compra c) {
         CompraService.save(c);
-        return ResponseEntity.ok().body("Compra atualizado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Compra atualizado com sucesso\"}");
     }
 	
 	@DeleteMapping("/compra")
 	public ResponseEntity<String> deleteCompra(@Valid @RequestBody Compra c) {
         CompraService.delete(c);
-        return ResponseEntity.ok().body("Compra deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Compra deletado com sucesso\"}");
     }
 }

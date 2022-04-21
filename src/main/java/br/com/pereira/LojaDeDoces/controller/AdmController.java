@@ -31,6 +31,6 @@ public class AdmController {
 	@PutMapping("/adm")
 	public ResponseEntity<String> putAdm(@Valid @RequestBody Adm a) {
 		admService.save(a);
-        return ResponseEntity.ok().body("Adm atualizado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Adm atualizado com sucesso\"}");
     }
 }

@@ -78,27 +78,27 @@ public class EnderecoController {
     public ResponseEntity<String> postEndereco(@Valid @RequestBody Endereco e) {
 		Optional<Endereco> endereco = enderecoService.findByCepLogradouroNumeroBairroCidadePost(e);
 		if(endereco.isPresent()) {
-			return ResponseEntity.badRequest().body("Endereco já presente no banco");
+			return ResponseEntity.badRequest().body("{\"status\":\"Endereco já presente no banco\"}");
 		} else {
 			enderecoService.save(e);
-	        return ResponseEntity.ok().body("Endereco inserido com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Endereco inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/endereco")
 	public ResponseEntity<String> putEndereco(@Valid @RequestBody Endereco[] e) {
 		if(validaEndereco(e)) {
-			return ResponseEntity.badRequest().body("Endereco inválido");
+			return ResponseEntity.badRequest().body("{\"status\":\"Endereco inválido\"}");
 		} else {
 			enderecoService.spPutNewEndereco(e);
-	        return ResponseEntity.ok().body("Endereco atualizado com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Endereco atualizado com sucesso\"}");
 		}
     }
 	
 	@DeleteMapping("/endereco")
 	public ResponseEntity<String> deleteEndereco(@RequestBody Endereco e) {
         enderecoService.delete(e);
-        return ResponseEntity.ok().body("Endereco deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Endereco deletado com sucesso\"}");
     }
 	
 	private boolean validaEndereco(Endereco[] e) {

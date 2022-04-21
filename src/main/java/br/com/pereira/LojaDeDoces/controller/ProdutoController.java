@@ -65,22 +65,25 @@ public class ProdutoController {
     public ResponseEntity<String> postProduto(@Valid @RequestBody Produto p) {
 		Optional<Produto> produto = produtoService.findByIdForOptional(p.getId());
 		if(produto.isPresent()) {
-			return ResponseEntity.badRequest().body("Produto já presente no banco");
+			return ResponseEntity.badRequest().body(
+					"{\"status\":\"Produto já presente no banco, "
+					+ "número de ID igual. Tente reenviar o mesmo produto "
+					+ "novamente para tentar usar outro ID válido no sistema\"}");
 		} else {
 			produtoService.save(p);
-	        return ResponseEntity.ok().body("Produto inserido com sucesso");
+	        return ResponseEntity.ok().body("{\"status\":\"Produto inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/produto")
 	public ResponseEntity<String> putProduto(@Valid @RequestBody Produto p) {
         produtoService.save(p);
-        return ResponseEntity.ok().body("Produto atualizado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Produto atualizado com sucesso\"}");
     }
 	
 	@DeleteMapping("/produto")
 	public ResponseEntity<String> deleteProduto(@Valid @RequestBody Produto p) {
         produtoService.delete(p);
-        return ResponseEntity.ok().body("Produto deletado com sucesso");
+        return ResponseEntity.ok().body("{\"status\":\"Produto deletado com sucesso\"}");
     }
 }
