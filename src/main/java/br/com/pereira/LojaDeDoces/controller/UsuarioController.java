@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,40 +32,60 @@ public class UsuarioController {
 	private EmailService emailService;
 	
 	@GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable(value = "idUsuario") int idUsuario) throws ResourceNotFoundException {
-        Usuario usuario = usuarioService.findById(idUsuario);
-        return ResponseEntity.ok().body(usuario);
+    public ResponseEntity<Usuario> getUsuario(@PathVariable(value = "idUsuario") int idUsuario) {
+		try {
+			Usuario usuario = usuarioService.findById(idUsuario);
+	        return ResponseEntity.ok().body(usuario);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new Usuario());
+		}
     }
 	
 	@GetMapping("/usuario")
-    public ResponseEntity<List<Usuario>> getAllUsuario() throws ResourceNotFoundException {
-		List<Usuario> listaUsuario = new ArrayList<Usuario>();
-		listaUsuario = usuarioService.findAll();
-        return ResponseEntity.ok().body(listaUsuario);
+    public ResponseEntity<List<Usuario>> getAllUsuario() {
+		try {
+			List<Usuario> listaUsuario = new ArrayList<Usuario>();
+			listaUsuario = usuarioService.findAll();
+	        return ResponseEntity.ok().body(listaUsuario);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(new ArrayList<Usuario>());
+		}
     }
 	
 	@PostMapping("/usuario")
     public ResponseEntity<String> postUsuario(@Valid @RequestBody Usuario u) {
-		Optional<Usuario> usuario = usuarioService.findByIdForPostMethod(u.getId());
-		if(usuario.isPresent()) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Usuario já presente no banco\"}");
-		} else {
-			usuarioService.save(u);
-			String emailStatus = emailService.sendEmailConfirmation(u);
-	        return ResponseEntity.ok().body("{\"status\":\"Usuario inserido com sucesso. " + emailStatus + "\"}");
+		try {
+			Optional<Usuario> usuario = usuarioService.findByIdForPostMethod(u.getId());
+			if(usuario.isPresent()) {
+				return ResponseEntity.badRequest().body("{\"status\":\"Usuario já presente no banco\"}");
+			} else {
+				usuarioService.save(u);
+				String emailStatus = emailService.sendEmailConfirmation(u);
+		        return ResponseEntity.ok().body("{\"status\":\"Usuario inserido com sucesso. " + emailStatus + "\"}");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao inserir Usuario\"}");
 		}
     }
 	
 	@PutMapping("/usuario")
 	public ResponseEntity<String> putUsuario(@Valid @RequestBody Usuario u) {
-		usuarioService.save(u);
-		String emailStatus = emailService.sendEmailConfirmation(u);
-        return ResponseEntity.ok().body("{\"status\":\"Usuario atualizado com sucesso. " + emailStatus + "\"}");
+		try {
+			usuarioService.save(u);
+			String emailStatus = emailService.sendEmailConfirmation(u);
+	        return ResponseEntity.ok().body("{\"status\":\"Usuario atualizado com sucesso. " + emailStatus + "\"}");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Usuario\"}");
+		}
     }
 	
 	@DeleteMapping("/usuario")
 	public ResponseEntity<String> deleteUsuario(@Valid @RequestBody Usuario u) {
-		usuarioService.delete(u);
-        return ResponseEntity.ok().body("{\"status\":\"Usuario deletado com sucesso\"}");
+		try {
+			usuarioService.delete(u);
+	        return ResponseEntity.ok().body("{\"status\":\"Usuario deletado com sucesso\"}");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao deletar Usuario\"}");
+		}
     }
 }

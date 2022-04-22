@@ -3,7 +3,6 @@ package br.com.pereira.LojaDeDoces.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +22,22 @@ public class AdmController {
     private AdmService admService;
 	
 	@GetMapping("/adm/{idAdm}")
-    public ResponseEntity<Adm> getAdm(@PathVariable(value = "idAdm") int idAdm) throws ResourceNotFoundException {
-		Adm adm = admService.findById(idAdm);
-        return ResponseEntity.ok().body(adm);
+    public ResponseEntity<Adm> getAdm(@PathVariable(value = "idAdm") int idAdm) {
+		try {
+			Adm adm = admService.findById(idAdm);
+	        return ResponseEntity.ok().body(adm);
+		} catch (Exception e) {
+	        return ResponseEntity.badRequest().body(new Adm());
+		}
     }
 	
 	@PutMapping("/adm")
 	public ResponseEntity<String> putAdm(@Valid @RequestBody Adm a) {
-		admService.save(a);
-        return ResponseEntity.ok().body("{\"status\":\"Adm atualizado com sucesso\"}");
+		try {
+			admService.save(a);
+	        return ResponseEntity.ok().body("{\"status\":\"Adm atualizado com sucesso\"}");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Adm\"}");
+		}
     }
 }

@@ -18,7 +18,7 @@ public class EmailService {
 	
 	@Autowired
 	private JavaMailSender emailSender;
-
+	
 	public String sendEmailConfirmation(Usuario usuario) {
 		try {
 			SimpleMailMessage sm = prepareSimpleMailMessageFromUsuario(usuario);
@@ -28,14 +28,61 @@ public class EmailService {
 			return "Email não enviado";
 		}
 	}
-
+	
+	public String sendEmailPagamento(StringBuffer jsonEmFormatoStringBuffer, String usuarioEmail) {
+		SimpleMailMessage sm = null;
+		try {
+			sm = prepareSimpleMailMessageFromJSON(jsonEmFormatoStringBuffer, usuarioEmail);
+			emailSender.send(sm);
+			return "Email enviado com sucesso" + " - " + sm.getText().replace("\"", "");
+		} catch (Exception e) {
+			return "Email não enviado" + " - " + sm.getText().replace("\"", "");
+		}
+	}
+	
 	private SimpleMailMessage prepareSimpleMailMessageFromUsuario(Usuario usuario) {
 		SimpleMailMessage sm = new SimpleMailMessage();
+		
 		sm.setTo(usuario.getEmail());
 		sm.setFrom(sender);
-		sm.setSubject("Email confirmado!");
+		sm.setSubject("SweetSugar");
 		sm.setSentDate(new Date(System.currentTimeMillis()));
-		sm.setText("Login cadastrado: " + usuario.getEmail() + "\nSenha cadastrada: " + usuario.getSenha());
+		sm.setText("Cadastro realizado!\nLogin cadastrado: " + usuario.getEmail() + "\nSenha cadastrada: " + usuario.getSenha());
+		
+		return sm;
+	}
+	
+	private SimpleMailMessage prepareSimpleMailMessageFromJSON(StringBuffer jsonEmFormatoStringBuffer, String usuarioEmail) {
+		String jsonRetorno = jsonEmFormatoStringBuffer.toString();
+		String[] campos = jsonRetorno.split(",");
+		String[] campoIdDividido = null;
+		String[] campoStatusDividido = null;
+		String id = "";
+		String status = "";
+		
+		for(int i=0; i<campos.length; i++) {
+			if(campos[i].contains("\"id\"")) {
+				campoIdDividido = campos[i].split(":");
+			} else if(campos[i].contains("status")) {
+				campoStatusDividido = campos[i].split(":");
+			}
+		}
+		
+		if(campoStatusDividido[1].contains("AUTHORIZED")) {
+			id = " - Código da compra: " + campoIdDividido[1];
+			status = "Autorizado";
+		} else {
+			status = "Não realizada";
+		}
+		
+		SimpleMailMessage sm = new SimpleMailMessage();
+		
+		sm.setTo(usuarioEmail);
+		sm.setFrom(sender);
+		sm.setSubject("SweetSugar");
+		sm.setSentDate(new Date(System.currentTimeMillis()));
+		sm.setText("Status da compra: " + status + id);
+		
 		return sm;
 	}
 }

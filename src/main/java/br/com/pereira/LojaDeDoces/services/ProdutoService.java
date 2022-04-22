@@ -31,6 +31,11 @@ public class ProdutoService {
 				() -> new ResourceNotFoundException(tituloProduto + " inválido"));
 	}
 	
+	public List<Produto> findAllByCategoria(String categoriaProduto) {
+		return pRep.findByCategoria1OrCategoria2OrCategoria3(categoriaProduto, categoriaProduto, categoriaProduto).orElseThrow(
+				() -> new ResourceNotFoundException(categoriaProduto + " inválido"));
+	}
+	
 	public List<Produto> findAllByHighPrice() {
 		return pRep.findAllByHighPrice().orElseThrow(
 				() -> new ResourceNotFoundException("Erro ao buscar todos os produtos pelo maior preco"));

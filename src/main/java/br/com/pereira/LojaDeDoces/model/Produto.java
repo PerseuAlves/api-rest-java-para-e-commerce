@@ -52,5 +52,12 @@ public class Produto {
 	@Column
 	@NotNull
 	private double preco;
+	@Column
+	@NotNull
+	private String categoria1;
+	@Column
+	private String categoria2;
+	@Column
+	private String categoria3;
 	
 }
