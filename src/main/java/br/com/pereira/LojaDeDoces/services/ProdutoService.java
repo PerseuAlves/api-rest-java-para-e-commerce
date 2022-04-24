@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.pereira.LojaDeDoces.model.Produto;
+import br.com.pereira.LojaDeDoces.model.resource.CategoriaFromProduto;
 import br.com.pereira.LojaDeDoces.repository.ProdutoRepository;
 import br.com.pereira.LojaDeDoces.services.exception.IllegalArgumentException;
 import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
@@ -35,6 +36,12 @@ public class ProdutoService {
 	
 	public List<Produto> findAllByLowerPrice() {
 		return pRep.findAllByLowerPrice().orElseThrow(
+                () -> new ResourceNotFoundException()
+        );
+	}
+	
+	public List<CategoriaFromProduto> findAllDistinctCategoria() {
+		return pRep.findAllDistinctCategoria().orElseThrow(
                 () -> new ResourceNotFoundException()
         );
 	}

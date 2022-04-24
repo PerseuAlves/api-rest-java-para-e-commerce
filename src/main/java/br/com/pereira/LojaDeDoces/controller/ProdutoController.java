@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Produto;
+import br.com.pereira.LojaDeDoces.model.resource.CategoriaFromProduto;
 import br.com.pereira.LojaDeDoces.services.ProdutoService;
 import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
 
@@ -69,6 +70,13 @@ public class ProdutoController {
 		List<Produto> listaProduto = produtoService.findAllByLowerPrice();
         return ResponseEntity.ok().body(listaProduto);
     }
+	
+	@GetMapping("/produto/allCategory")
+    public ResponseEntity<List<CategoriaFromProduto>> getAllDistinctCategoria() {
+		
+		List<CategoriaFromProduto> listaCategoria = produtoService.findAllDistinctCategoria();
+        return ResponseEntity.ok().body(listaCategoria);
+	}
 	
 	@PostMapping("/produto")
     public ResponseEntity<String> postProduto(@Valid @RequestBody Produto p) {

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.NamedNativeQuery;
 
+import br.com.pereira.LojaDeDoces.model.resource.CategoriaFromProduto;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,6 +43,11 @@ import lombok.Setter;
         		+ " FROM produto"
         		+ " ORDER BY preco",
         resultClass = Produto.class
+)
+@NamedNativeQuery(
+		name = "Produto.findAllDistinctCategoria",
+		query = "SELECT * FROM fn_selectAllCategoria()",
+		resultClass = CategoriaFromProduto.class
 )
 public class Produto {
 

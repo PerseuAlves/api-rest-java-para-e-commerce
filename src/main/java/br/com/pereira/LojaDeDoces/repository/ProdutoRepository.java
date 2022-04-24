@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.pereira.LojaDeDoces.model.Produto;
+import br.com.pereira.LojaDeDoces.model.resource.CategoriaFromProduto;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
 
@@ -13,4 +14,5 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
 	Optional<List<Produto>> findAllByHighPrice();
 	Optional<List<Produto>> findAllByLowerPrice();
 	Optional<Produto> findByTitulo(String titulo);
+	Optional<List<CategoriaFromProduto>> findAllDistinctCategoria();
 }

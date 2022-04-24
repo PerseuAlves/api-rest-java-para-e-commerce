@@ -58,16 +58,12 @@ public class TelefoneController {
 	@PutMapping("/telefone")
 	public ResponseEntity<String> putTelefone(@Valid @RequestBody Telefone[] t) {
 		
-		if(t[0].getNumero().isBlank() || t[1].getNumero().isBlank()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone inválido\"}");
+		String retorno = telefoneService.putNewTelefone(t);
+		
+		if(retorno.contains("sucesso")) {
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone atualizado com sucesso\"}");
 		} else {
-			String retorno = telefoneService.putNewTelefone(t[0].getNumero(), t[1].getNumero());
-			
-			if(retorno.contains("sucesso")) {
-				return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone atualizado com sucesso\"}");
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Telefone\"}");
-			}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Telefone\"}");
 		}
     }
 	

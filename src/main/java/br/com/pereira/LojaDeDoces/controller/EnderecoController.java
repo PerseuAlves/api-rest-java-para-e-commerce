@@ -83,16 +83,12 @@ public class EnderecoController {
 	@PutMapping("/endereco")
 	public ResponseEntity<String> putEndereco(@Valid @RequestBody Endereco[] e) {
 		
-		if(validaEndereco(e)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco inválido\"}");
+		String retorno = enderecoService.spPutNewEndereco(e);
+		
+		if(retorno.contains("sucesso")) {
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco atualizado com sucesso\"}");
 		} else {
-			String retorno = enderecoService.spPutNewEndereco(e);
-			
-			if(retorno.contains("sucesso")) {
-				return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco atualizado com sucesso\"}");
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Endereco\"}");
-			}
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Endereco\"}");
 		}
     }
 	
@@ -102,22 +98,4 @@ public class EnderecoController {
 		enderecoService.delete(e);
 		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco deletado com sucesso\"}");
     }
-	
-	private boolean validaEndereco(Endereco[] e) {
-		
-		if(e[0].getEnderecoId().getCep() == 0 || 
-		   e[0].getEnderecoId().getLogradouro().isBlank() || 
-		   e[0].getEnderecoId().getNumero() == 0 || 
-		   e[0].getEnderecoId().getBairro().isBlank() || 
-		   e[0].getEnderecoId().getCidade().isBlank() || 
-		   e[1].getEnderecoId().getCep() == 0 || 
-		   e[1].getEnderecoId().getLogradouro().isBlank() || 
-		   e[1].getEnderecoId().getNumero() == 0 || 
-		   e[1].getEnderecoId().getBairro().isBlank() || 
-		   e[1].getEnderecoId().getCidade().isBlank()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 }

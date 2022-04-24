@@ -61,16 +61,39 @@ public class EnderecoService {
 	}
 	
 	public String spPutNewEndereco(Endereco[] e) {
-		return eRep.spPutNewEndereco(e[0].getEnderecoId().getCep(), 
-        		e[0].getEnderecoId().getLogradouro(), 
-        		e[0].getEnderecoId().getNumero(), 
-        		e[0].getEnderecoId().getBairro(), 
-        		e[0].getEnderecoId().getCidade(), 
-        		e[1].getEnderecoId().getCep(), 
-        		e[1].getEnderecoId().getLogradouro(), 
-        		e[1].getEnderecoId().getNumero(), 
-        		e[1].getEnderecoId().getBairro(), 
-        		e[1].getEnderecoId().getCidade(),
-        		e[1].getComplemento());
+		if(validaEndereco(e)) {
+			throw new IllegalArgumentException();
+		} else {
+			return eRep.spPutNewEndereco(e[0].getEnderecoId().getCep(), 
+	        		e[0].getEnderecoId().getLogradouro(), 
+	        		e[0].getEnderecoId().getNumero(), 
+	        		e[0].getEnderecoId().getBairro(), 
+	        		e[0].getEnderecoId().getCidade(), 
+	        		e[1].getEnderecoId().getCep(), 
+	        		e[1].getEnderecoId().getLogradouro(), 
+	        		e[1].getEnderecoId().getNumero(), 
+	        		e[1].getEnderecoId().getBairro(), 
+	        		e[1].getEnderecoId().getCidade(),
+	        		e[1].getComplemento());
+		}
+	}
+	
+	private boolean validaEndereco(Endereco[] e) {
+		
+		if(e[0].getEnderecoId().getCep() == 0 || 
+		   e[0].getEnderecoId().getLogradouro().isBlank() || 
+		   e[0].getEnderecoId().getNumero() == 0 || 
+		   e[0].getEnderecoId().getBairro().isBlank() || 
+		   e[0].getEnderecoId().getCidade().isBlank() || 
+		   e[1].getEnderecoId().getCep() == 0 || 
+		   e[1].getEnderecoId().getLogradouro().isBlank() || 
+		   e[1].getEnderecoId().getNumero() == 0 || 
+		   e[1].getEnderecoId().getBairro().isBlank() || 
+		   e[1].getEnderecoId().getCidade().isBlank()) 
+		{
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

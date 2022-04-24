@@ -35,15 +35,29 @@ public class TelefoneService {
 		tRep.delete(t);
 	}
 
-	public String putNewTelefone(String numAntigo, String numNovo) {
-		return tRep.putNewTelefone(numAntigo, numNovo);
+	public String putNewTelefone(Telefone[] t) {
+		validaTelefones(t);
+		return tRep.putNewTelefone(t[0].getNumero(), t[1].getNumero());
 	}
-	
+
 	private void validaTelefone(Telefone t) {
 		try {
 			Long.parseLong(t.getNumero());
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException();
 		}		
+	}
+	
+	private void validaTelefones(Telefone[] t) {
+		try {
+			Long.parseLong(t[0].getNumero());
+			Long.parseLong(t[1].getNumero());
+			
+			if(t[0].getNumero().isBlank() || t[1].getNumero().isBlank()) {
+				throw new IllegalArgumentException();
+			}
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException();
+		}	
 	}
 }
