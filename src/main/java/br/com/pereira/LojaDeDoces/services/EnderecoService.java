@@ -1,13 +1,14 @@
 package br.com.pereira.LojaDeDoces.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.pereira.LojaDeDoces.model.Endereco;
 import br.com.pereira.LojaDeDoces.repository.EnderecoRepository;
+import br.com.pereira.LojaDeDoces.services.exception.IllegalArgumentException;
+import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
 
 @Service
 public class EnderecoService {
@@ -15,40 +16,52 @@ public class EnderecoService {
 	@Autowired
     private EnderecoRepository eRep;
 	
-	public Optional<List<Endereco>> findByCep(int cepId) {
-		return eRep.findByEnderecoIdCep(cepId);
-	}
-	
-	public Optional<Endereco> findByCepLogradouroNumero(
-			int cepId, String logradouroId, int numeroId) {
-		return eRep.findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumero(
-				cepId, logradouroId, numeroId);
-	}
-	
-	public Optional<Endereco> findByCepLogradouroNumeroBairroCidade(
-			int cepId, String logradouroId, int numeroId, String bairroId, 
-			String cidadeId) {
-		return eRep.findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(
-				cepId, logradouroId, numeroId, bairroId, cidadeId);
-	}
-	
 	public List<Endereco> findAll() {
 		return eRep.findAll();
 	}
 	
-	public Optional<Endereco> findByCepLogradouroNumeroBairroCidadePost(Endereco e) {
+	public List<Endereco> findByCep(Integer cepId) {
+		return eRep.findByEnderecoIdCep(cepId).orElseThrow(
+                () -> new ResourceNotFoundException()
+        );
+	}
+	
+	public Endereco findByCepLogradouroNumero(
+			Integer cepId, String logradouroId, Integer numeroId) {
+		return eRep.findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumero(
+				cepId, logradouroId, numeroId).orElseThrow(
+		                () -> new ResourceNotFoundException()
+		);
+	}
+	
+	public Endereco findByCepLogradouroNumeroBairroCidade(
+			Integer cepId, String logradouroId, Integer numeroId, String bairroId, 
+			String cidadeId) {
+		return eRep.findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(
+				cepId, logradouroId, numeroId, bairroId, cidadeId).orElseThrow(
+		                () -> new ResourceNotFoundException()
+		);
+	}
+	
+	public Endereco findByCepLogradouroNumeroBairroCidadePost(Endereco e) {
 		return eRep.findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(
 				e.getEnderecoId().getCep(), e.getEnderecoId().getLogradouro(), 
 				e.getEnderecoId().getNumero(), e.getEnderecoId().getBairro(), 
-				e.getEnderecoId().getCidade());
+				e.getEnderecoId().getCidade()).orElseThrow(
+		                () -> new ResourceNotFoundException()
+		);
 	}
 	
-	public void save(Endereco e) {
+	public void save(Endereco e) throws IllegalArgumentException {
 		eRep.save(e);
 	}
 	
-	public void spPutNewEndereco(Endereco[] e) {
-		eRep.spPutNewEndereco(e[0].getEnderecoId().getCep(), 
+	public void delete(Endereco e) throws IllegalArgumentException {
+		eRep.delete(e);
+	}
+	
+	public String spPutNewEndereco(Endereco[] e) {
+		return eRep.spPutNewEndereco(e[0].getEnderecoId().getCep(), 
         		e[0].getEnderecoId().getLogradouro(), 
         		e[0].getEnderecoId().getNumero(), 
         		e[0].getEnderecoId().getBairro(), 
@@ -59,9 +72,5 @@ public class EnderecoService {
         		e[1].getEnderecoId().getBairro(), 
         		e[1].getEnderecoId().getCidade(),
         		e[1].getComplemento());
-	}
-	
-	public void delete(Endereco e) {
-		eRep.delete(e);
 	}
 }

@@ -1,12 +1,12 @@
 package br.com.pereira.LojaDeDoces.controller;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Telefone;
 import br.com.pereira.LojaDeDoces.services.TelefoneService;
+import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/api")
@@ -29,60 +30,51 @@ public class TelefoneController {
 	
 	@GetMapping("/telefone/{idTelefone}")
     public ResponseEntity<Telefone> getTelefone(@PathVariable(value = "idTelefone") String idTelefone) {
-		try {
-			Telefone telefone = telefoneService.findById(idTelefone);
-	        return ResponseEntity.ok().body(telefone);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new Telefone());
-		}
+	
+		Telefone telefone = telefoneService.findById(idTelefone);
+        return ResponseEntity.ok().body(telefone);
     }
 	
 	@GetMapping("/telefone")
     public ResponseEntity<List<Telefone>> getAllTelefone() {
-		try {
-			List<Telefone> listaTelefone = new ArrayList<Telefone>();
-			listaTelefone = telefoneService.findAll();
-	        return ResponseEntity.ok().body(listaTelefone);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new ArrayList<Telefone>());
-		}
+	
+		List<Telefone> listaTelefone = telefoneService.findAll();
+        return ResponseEntity.ok().body(listaTelefone);
     }
 	
 	@PostMapping("/telefone")
     public ResponseEntity<String> postTelefone(@Valid @RequestBody Telefone t) {
+		
 		try {
-			Optional<Telefone> telefone = telefoneService.findByIdForOptional(t.getNumero());
-			if(telefone.isPresent()) {
-				return ResponseEntity.badRequest().body("{\"status\":\"Telefone já presente no banco\"}");
-			} else {
-				telefoneService.save(t);
-		        return ResponseEntity.ok().body("{\"status\":\"Telefone inserido com sucesso\"}");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao inserir Telefone\"}");
+			@SuppressWarnings("unused")
+			Telefone telefone = telefoneService.findById(t.getNumero());
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone já cadastrado\"}");
+		} catch (ResourceNotFoundException e) {
+			telefoneService.save(t);
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/telefone")
 	public ResponseEntity<String> putTelefone(@Valid @RequestBody Telefone[] t) {
-		try {
-			if(t[0].getNumero().isBlank() || t[1].getNumero().isBlank()) {
-				return ResponseEntity.badRequest().body("{\"status\":\"Telefone inválido");
+		
+		if(t[0].getNumero().isBlank() || t[1].getNumero().isBlank()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone inválido\"}");
+		} else {
+			String retorno = telefoneService.putNewTelefone(t[0].getNumero(), t[1].getNumero());
+			
+			if(retorno.contains("sucesso")) {
+				return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone atualizado com sucesso\"}");
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Telefone\"}");
 			}
-			telefoneService.putNewTelefone(t[0].getNumero(), t[1].getNumero());
-	        return ResponseEntity.ok().body("{\"status\":\"Telefone atualizado com sucesso\"}");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Telefone\"}");
 		}
     }
 	
 	@DeleteMapping("/telefone")
 	public ResponseEntity<String> deleteTelefone(@Valid @RequestBody Telefone t) {
-		try {
-			telefoneService.delete(t);
-	        return ResponseEntity.ok().body("{\"status\":\"Telefone deletado com sucesso\"}");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao deletar Telefone\"}");
-		}
+		
+		telefoneService.delete(t);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Telefone deletado com sucesso\"}");
     }
 }

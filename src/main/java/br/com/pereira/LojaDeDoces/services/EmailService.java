@@ -60,7 +60,7 @@ public class EmailService {
 		String id = "";
 		String status = "";
 		
-		for(int i=0; i<campos.length; i++) {
+		for(Integer i=0; i<campos.length; i++) {
 			if(campos[i].contains("\"id\"")) {
 				campoIdDividido = campos[i].split(":");
 			} else if(campos[i].contains("status")) {

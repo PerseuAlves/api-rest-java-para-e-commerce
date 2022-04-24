@@ -1,12 +1,12 @@
 package br.com.pereira.LojaDeDoces.controller;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,117 +19,92 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Endereco;
 import br.com.pereira.LojaDeDoces.services.EnderecoService;
+import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/api")
 public class EnderecoController {
-
+	
 	@Autowired
     private EnderecoService enderecoService;
 	
 	@GetMapping("/endereco/{CepId}")
-    public ResponseEntity<Optional<List<Endereco>>> getEndereco(
-    		@PathVariable(value = "CepId") int cepId) {
-		try {
-			Optional<List<Endereco>> enderecos = enderecoService.findByCep(cepId);
-	        if(enderecos.equals(null)) {
-	        	return ResponseEntity.badRequest().body(null);
-	        } else {
-	        	return ResponseEntity.ok().body(enderecos);
-	        }
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		}
+    public ResponseEntity<List<Endereco>> getEndereco(
+    		@PathVariable(value = "CepId") Integer cepId) {
+		
+			List<Endereco> enderecos = enderecoService.findByCep(cepId);
+	        return ResponseEntity.ok().body(enderecos);
     }
 	
 	@GetMapping("/endereco/{CepId}/{LogradouroId}/{NumeroId}")
-    public ResponseEntity<Optional<Endereco>> getEndereco(
-    		@PathVariable(value = "CepId") int cepId,
+    public ResponseEntity<Endereco> getEndereco(
+    		@PathVariable(value = "CepId") Integer cepId,
     		@PathVariable(value = "LogradouroId") String logradouroId,
-    		@PathVariable(value = "NumeroId") int numeroId) {
-		try {
-			Optional<Endereco> endereco = enderecoService.findByCepLogradouroNumero(
+    		@PathVariable(value = "NumeroId") Integer numeroId) {
+		
+			Endereco endereco = enderecoService.findByCepLogradouroNumero(
 	        		cepId, logradouroId, numeroId);
-	        if(endereco.isEmpty()) {
-	        	return ResponseEntity.badRequest().body(null);
-	        } else {
-	        	return ResponseEntity.ok().body(endereco);
-	        }
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		}
+	        return ResponseEntity.ok().body(endereco);
     }
 	
 	@GetMapping("/endereco/{CepId}/{LogradouroId}/{NumeroId}/{BairroId}/{CidadeId}")
-    public ResponseEntity<Optional<Endereco>> getEndereco(
-    		@PathVariable(value = "CepId") int cepId,
+    public ResponseEntity<Endereco> getEndereco(
+    		@PathVariable(value = "CepId") Integer cepId,
     		@PathVariable(value = "LogradouroId") String logradouroId,
-    		@PathVariable(value = "NumeroId") int numeroId,
+    		@PathVariable(value = "NumeroId") Integer numeroId,
     		@PathVariable(value = "BairroId") String bairroId,
     		@PathVariable(value = "CidadeId") String cidadeId) {
-		try {
-			Optional<Endereco> endereco = enderecoService.findByCepLogradouroNumeroBairroCidade(
+		
+			Endereco endereco = enderecoService.findByCepLogradouroNumeroBairroCidade(
 	        		cepId, logradouroId, numeroId, bairroId, cidadeId);
-	        if(endereco.equals(null)) {
-	        	return ResponseEntity.badRequest().body(null);
-	        } else {
-	        	return ResponseEntity.ok().body(endereco);
-	        }
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		}
+	        return ResponseEntity.ok().body(endereco);
     }
 	
 	@GetMapping("/endereco")
     public ResponseEntity<List<Endereco>> getAllEndereco() {
-		try {
+		
 			List<Endereco> listaEndereco = enderecoService.findAll();
 	        return ResponseEntity.ok().body(listaEndereco);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new ArrayList<Endereco>());
-		}
     }
 	
 	@PostMapping("/endereco")
     public ResponseEntity<String> postEndereco(@Valid @RequestBody Endereco e) {
+		
 		try {
-			Optional<Endereco> endereco = enderecoService.findByCepLogradouroNumeroBairroCidadePost(e);
-			if(endereco.isPresent()) {
-				return ResponseEntity.badRequest().body("{\"status\":\"Endereco já presente no banco\"}");
-			} else {
-				enderecoService.save(e);
-		        return ResponseEntity.ok().body("{\"status\":\"Endereco inserido com sucesso\"}");
-			}
-		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao inserir Endereco\"}");
+			@SuppressWarnings("unused")
+			Endereco endereco = enderecoService.findByCepLogradouroNumeroBairroCidadePost(e);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco já cadastrado\"}");
+		} catch (ResourceNotFoundException ex) {
+			enderecoService.save(e);
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco inserido com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/endereco")
 	public ResponseEntity<String> putEndereco(@Valid @RequestBody Endereco[] e) {
-		try {
-			if(validaEndereco(e)) {
-				return ResponseEntity.badRequest().body("{\"status\":\"Endereco inválido\"}");
+		
+		if(validaEndereco(e)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco inválido\"}");
+		} else {
+			String retorno = enderecoService.spPutNewEndereco(e);
+			
+			if(retorno.contains("sucesso")) {
+				return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco atualizado com sucesso\"}");
 			} else {
-				enderecoService.spPutNewEndereco(e);
-		        return ResponseEntity.ok().body("{\"status\":\"Endereco atualizado com sucesso\"}");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao atualizar Endereco\"}");
 			}
-		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Endereco\"}");
 		}
     }
 	
 	@DeleteMapping("/endereco")
 	public ResponseEntity<String> deleteEndereco(@RequestBody Endereco e) {
-		try {
-			enderecoService.delete(e);
-	        return ResponseEntity.ok().body("{\"status\":\"Endereco deletado com sucesso\"}");
-		} catch (Exception ex) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao deletar Endereco\"}");
-		}
+		
+		enderecoService.delete(e);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Endereco deletado com sucesso\"}");
     }
 	
 	private boolean validaEndereco(Endereco[] e) {
+		
 		if(e[0].getEnderecoId().getCep() == 0 || 
 		   e[0].getEnderecoId().getLogradouro().isBlank() || 
 		   e[0].getEnderecoId().getNumero() == 0 || 

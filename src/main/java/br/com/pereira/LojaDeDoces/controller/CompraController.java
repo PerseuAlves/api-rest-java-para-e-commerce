@@ -1,12 +1,12 @@
 package br.com.pereira.LojaDeDoces.controller;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.Compra;
 import br.com.pereira.LojaDeDoces.services.CompraService;
+import br.com.pereira.LojaDeDoces.services.exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/api")
@@ -29,61 +30,42 @@ public class CompraController {
 	
 	@GetMapping("/compra")
     public ResponseEntity<List<Compra>> getAllCompra() {
-		try {
-			List<Compra> listaCompra = new ArrayList<Compra>();
-			listaCompra = CompraService.findAll();
-	        return ResponseEntity.ok().body(listaCompra);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new ArrayList<Compra>());
-		}
+		
+		List<Compra> listaCompra = CompraService.findAll();
+        return ResponseEntity.ok().body(listaCompra);
     }
 	
 	@GetMapping("/compra/{idCompra}")
-    public ResponseEntity<Optional<Compra>> getCompra(@PathVariable(value = "idCompra") int idCompra) {
-		try {
-			Optional<Compra> compra = CompraService.findById(idCompra);
-			if(compra.isPresent()) {
-				return ResponseEntity.ok().body(compra);
-			} else {
-				return ResponseEntity.badRequest().body(null);
-			}
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		}
+    public ResponseEntity<Compra> getCompra(@PathVariable(value = "idCompra") Integer idCompra) {
+		
+		Compra compra = CompraService.findById(idCompra);
+		return ResponseEntity.ok().body(compra);
     }
 	
 	@PostMapping("/compra")
     public ResponseEntity<String> postCompra(@Valid @RequestBody Compra c) {
+		
 		try {
-			Optional<Compra> compra = CompraService.findById(c.getId());
-			if(compra.isPresent()) {
-				return ResponseEntity.badRequest().body("{\"status\":\"Compra já presente no banco\"}");
-			} else {
-				CompraService.save(c);
-		        return ResponseEntity.ok().body("{\"status\":\"Compra inserida com sucesso\"}");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao inserir Compra\"}");
+			@SuppressWarnings("unused")
+			Compra compra = CompraService.findById(c.getId());
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Compra já cadastrada\"}");
+		} catch (ResourceNotFoundException e) {
+			CompraService.save(c);
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Compra inserida com sucesso\"}");
 		}
     }
 	
 	@PutMapping("/compra")
 	public ResponseEntity<String> putCompra(@Valid @RequestBody Compra c) {
-		try {
-			CompraService.save(c);
-	        return ResponseEntity.ok().body("{\"status\":\"Compra atualizada com sucesso\"}");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Compra\"}");
-		}
+		
+		CompraService.save(c);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Compra atualizada com sucesso\"}");
     }
 	
 	@DeleteMapping("/compra")
 	public ResponseEntity<String> deleteCompra(@Valid @RequestBody Compra c) {
-		try {
-			CompraService.delete(c);
-	        return ResponseEntity.ok().body("{\"status\":\"Compra deletada com sucesso\"}");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao deletar Compra\"}");
-		}
+		
+		CompraService.delete(c);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Compra deletada com sucesso\"}");
     }
 }

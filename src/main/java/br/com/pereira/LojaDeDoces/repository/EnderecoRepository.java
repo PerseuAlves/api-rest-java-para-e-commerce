@@ -14,18 +14,18 @@ public interface EnderecoRepository extends JpaRepository<Endereco, EnderecoId> 
 
 	@Procedure(name = "Endereco.spPutNewEndereco")
     String spPutNewEndereco(
-    		@Param("cepAntigo") int cepAntigo, 
+    		@Param("cepAntigo") Integer cepAntigo, 
     		@Param("logradouroAntigo") String logradouroAntigo, 
-    		@Param("numeroAntigo") int numeroAntigo, 
+    		@Param("numeroAntigo") Integer numeroAntigo, 
     		@Param("bairroAntigo") String bairroAntigo, 
     		@Param("cidadeAntigo") String cidadeAntigo, 
-    		@Param("cepNovo") int cepNovo, 
+    		@Param("cepNovo") Integer cepNovo, 
     		@Param("logradouroNovo") String logradouroNovo, 
-    		@Param("numeroNovo") int numeroNovo, 
+    		@Param("numeroNovo") Integer numeroNovo, 
     		@Param("bairroNovo") String bairroNovo, 
     		@Param("cidadeNovo") String cidadeNovo,
 			@Param("complementoNovo") String complementoNovo);
-	Optional<List<Endereco>> findByEnderecoIdCep(int cep);
-	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumero(int cep, String logradouro, int numero);
-	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(int cep, String logradouro, int numero, String bairro, String cidade);
+	Optional<List<Endereco>> findByEnderecoIdCep(Integer cep);
+	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumero(Integer cep, String logradouro, Integer numero);
+	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(Integer cep, String logradouro, Integer numero, String bairro, String cidade);
 }

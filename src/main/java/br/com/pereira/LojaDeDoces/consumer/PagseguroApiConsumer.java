@@ -49,10 +49,10 @@ public class PagseguroApiConsumer {
 	        
 	        String emailStatus = emailService.sendEmailPagamento(bufferResponse, usuarioEmail);
 	        
-	        return "{\"status\":\"" + emailStatus + "\"}";
+	        return "{\"message\":\"" + emailStatus + "\"}";
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			return "{\"status\":\"Error ao requisitar o pagamento\"}";
+			return "{\"message\":\"Error ao requisitar o pagamento\"}";
 		}
     }
 	
@@ -74,7 +74,7 @@ public class PagseguroApiConsumer {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node;
 			try {
-				node = mapper.readTree("{\"status\":\"Error ao consultar o pagamento\"}");
+				node = mapper.readTree("{\"message\":\"Error ao consultar o pagamento\"}");
 				return node;
 			} catch (JsonProcessingException e1) {
 				return null;
@@ -102,7 +102,7 @@ public class PagseguroApiConsumer {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node;
 			try {
-				node = mapper.readTree("{\"status\":\"Error ao capturar o pagamento\"}");
+				node = mapper.readTree("{\"message\":\"Error ao capturar o pagamento\"}");
 				return node;
 			} catch (JsonProcessingException e1) {
 				return null;

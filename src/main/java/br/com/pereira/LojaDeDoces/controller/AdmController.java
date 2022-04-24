@@ -1,8 +1,11 @@
 package br.com.pereira.LojaDeDoces.controller;
 
+import java.time.Instant;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,22 +25,16 @@ public class AdmController {
     private AdmService admService;
 	
 	@GetMapping("/adm/{idAdm}")
-    public ResponseEntity<Adm> getAdm(@PathVariable(value = "idAdm") int idAdm) {
-		try {
-			Adm adm = admService.findById(idAdm);
-	        return ResponseEntity.ok().body(adm);
-		} catch (Exception e) {
-	        return ResponseEntity.badRequest().body(new Adm());
-		}
+    public ResponseEntity<Adm> getAdm(@PathVariable(value = "idAdm") Integer idAdm) {
+
+		Adm adm = admService.findById(idAdm);
+        return ResponseEntity.ok().body(adm);
     }
 	
 	@PutMapping("/adm")
 	public ResponseEntity<String> putAdm(@Valid @RequestBody Adm a) {
-		try {
-			admService.save(a);
-	        return ResponseEntity.ok().body("{\"status\":\"Adm atualizado com sucesso\"}");
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("{\"status\":\"Erro ao atualizar Adm\"}");
-		}
+		
+		admService.save(a);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Adm atualizado com sucesso\"}");
     }
 }

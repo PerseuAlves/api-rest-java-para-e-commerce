@@ -36,6 +36,13 @@ import lombok.Setter;
         		+ " ORDER BY preco",
         resultClass = Produto.class
 )
+@NamedNativeQuery(
+        name = "Produto.findAllCategoria",
+        query = "SELECT id, titulo, descricao, preco"
+        		+ " FROM produto"
+        		+ " ORDER BY preco",
+        resultClass = Produto.class
+)
 public class Produto {
 
 	@EqualsAndHashCode.Include

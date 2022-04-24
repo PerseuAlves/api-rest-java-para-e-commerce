@@ -7,8 +7,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,7 +38,6 @@ public class Usuario {
 	private String email;
 	@Column
 	@NotBlank
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String senha;
 	
 }
