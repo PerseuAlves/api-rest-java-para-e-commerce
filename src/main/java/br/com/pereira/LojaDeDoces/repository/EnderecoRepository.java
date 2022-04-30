@@ -28,4 +28,5 @@ public interface EnderecoRepository extends JpaRepository<Endereco, EnderecoId> 
 	Optional<List<Endereco>> findByEnderecoIdCep(Integer cep);
 	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumero(Integer cep, String logradouro, Integer numero);
 	Optional<Endereco> findByEnderecoIdCepAndEnderecoIdLogradouroAndEnderecoIdNumeroAndEnderecoIdBairroAndEnderecoIdCidade(Integer cep, String logradouro, Integer numero, String bairro, String cidade);
+	Optional<List<Endereco>> findByUsuarioId(Integer id);
 }

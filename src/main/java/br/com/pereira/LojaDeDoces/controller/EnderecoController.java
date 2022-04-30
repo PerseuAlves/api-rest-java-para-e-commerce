@@ -60,6 +60,14 @@ public class EnderecoController {
 	        return ResponseEntity.ok().body(endereco);
     }
 	
+	@GetMapping("/endereco/byUsuario/{UsuarioId}")
+    public ResponseEntity<List<Endereco>> getEnderecoByUsuario(
+    		@PathVariable(value = "UsuarioId") Integer UsuarioId) {
+		
+			List<Endereco> enderecos = enderecoService.findByUsuarioId(UsuarioId);
+	        return ResponseEntity.ok().body(enderecos);
+    }
+	
 	@GetMapping("/endereco")
     public ResponseEntity<List<Endereco>> getAllEndereco() {
 		

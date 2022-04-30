@@ -52,6 +52,12 @@ public class EnderecoService {
 		);
 	}
 	
+	public List<Endereco> findByUsuarioId(Integer usuarioId) {
+		return eRep.findByUsuarioId(usuarioId).orElseThrow(
+                () -> new ResourceNotFoundException()
+        );
+	}
+	
 	public void save(Endereco e) throws IllegalArgumentException {
 		eRep.save(e);
 	}
