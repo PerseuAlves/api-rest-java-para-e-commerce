@@ -23,4 +23,8 @@ public class ImagemService {
 	public void save(Imagem i) throws IllegalArgumentException {
 		iRep.save(i);
 	}
+	
+	public void delete(Imagem i) throws IllegalArgumentException {
+		iRep.delete(i);
+	}
 }

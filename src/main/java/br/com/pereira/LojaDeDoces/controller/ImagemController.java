@@ -7,9 +7,11 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,5 +48,19 @@ public class ImagemController {
 			imagemService.save(i);
 			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem inserida com sucesso\"}");
 		}
+    }
+	
+	@PutMapping("/imagem")
+	public ResponseEntity<String> putImagem(@Valid @RequestBody Imagem i) {
+		
+		imagemService.save(i);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem atualizada com sucesso\"}");
+    }
+	
+	@DeleteMapping("/imagem")
+	public ResponseEntity<String> deleteImagem(@Valid @RequestBody Imagem i) {
+		
+		imagemService.delete(i);
+		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem deletada com sucesso\"}");
     }
 }
