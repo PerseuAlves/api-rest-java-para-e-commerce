@@ -1,19 +1,25 @@
 package br.com.pereira.LojaDeDoces.controller;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.pereira.LojaDeDoces.model.resource.Imagem;
@@ -33,19 +39,37 @@ public class ImagemController {
 		
 		Imagem imagem = imagemService.findImagem(imagemId);
 		
+		// TODO
 		
 		return ResponseEntity.ok().body(imagem);
 	}
 	
-	@PostMapping("/imagem")
-    public ResponseEntity<String> postImagem(@Valid @RequestBody Imagem i) {
+	@RequestMapping(value = "/imagem/{ImagemId}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> postImagem(
+    		@PathVariable(value = "ImagemId") String nomeDoArquivo, @RequestBody String arquivoEmString) {
 		
 		try {
 			@SuppressWarnings("unused")
-			Imagem imagem = imagemService.findImagem(i.getId());
+			Imagem imagem = imagemService.findImagem(new Imagem(nomeDoArquivo).getId());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem já cadastrada\"}");
 		} catch (ResourceNotFoundException ex) {
-			imagemService.save(i);
+			Path diretorioAtual = Paths.get("").toAbsolutePath();
+			
+			try {
+				String path = diretorioAtual.normalize().toString() + File.separator + "Documents" + File.separator + "jee-2021-06" + File.separator + "Projetos" + File.separator + "LojaDeDoces" + File.separator + "arquivos";
+				File novoArquivo = new File(path + File.separator + nomeDoArquivo);
+			
+				if(novoArquivo.createNewFile()) {
+					FileWriter writer = new FileWriter(path + File.separator + nomeDoArquivo);
+					
+					writer.write(arquivoEmString);
+					writer.close();
+				}
+			} catch (IOException e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao criar arquivo da imagem no server\"}");
+			}
+			
+			imagemService.save(new Imagem(nomeDoArquivo));
 			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem inserida com sucesso\"}");
 		}
     }
