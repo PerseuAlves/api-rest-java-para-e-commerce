@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,11 +73,31 @@ public class ImagemController {
 		}
     }
 	
-	@PutMapping("/imagem")
-	public ResponseEntity<String> putImagem(@Valid @RequestBody Imagem i) {
+	@RequestMapping(value = "/imagem/{ImagemId}", method = RequestMethod.PUT, consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> putImagem(@PathVariable(value = "ImagemId") String nomeDoArquivo, @RequestBody String arquivoEmString) {
 		
-		imagemService.save(i);
-		return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem atualizada com sucesso\"}");
+		try {
+			Path diretorioAtual = Paths.get("").toAbsolutePath();
+			
+			try {
+				String path = diretorioAtual.normalize().toString() + File.separator + "Documents" + File.separator + "jee-2021-06" + File.separator + "Projetos" + File.separator + "LojaDeDoces" + File.separator + "arquivos";
+				File novoArquivo = new File(path + File.separator + nomeDoArquivo);
+			
+				if(novoArquivo.exists()) {
+					FileWriter writer = new FileWriter(path + File.separator + nomeDoArquivo, false);
+					
+					writer.write(arquivoEmString);
+					writer.close();
+				}
+			} catch (IOException e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao criar arquivo da imagem no server\"}");
+			}
+			
+			imagemService.save(new Imagem(nomeDoArquivo));
+			return ResponseEntity.status(HttpStatus.OK).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Imagem atualizada com sucesso\"}");
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"timestamp\":\"" + Instant.now() + "\",\"message\":\"Erro ao criar arquivo da imagem no server\"}");
+		}
     }
 	
 	@DeleteMapping("/imagem")
