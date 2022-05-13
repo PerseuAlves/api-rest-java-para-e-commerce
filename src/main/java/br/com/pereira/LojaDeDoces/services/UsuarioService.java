@@ -27,6 +27,12 @@ public class UsuarioService {
         );
 	}
 	
+	public Usuario findByNome(String nomeUsuario) {
+		return uRep.findByNome(nomeUsuario).orElseThrow(
+                () -> new ResourceNotFoundException()
+        );
+	}
+	
 	public void save(Usuario u) throws IllegalArgumentException {
 		validaUsuario(u);
 		uRep.save(u);
