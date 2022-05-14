@@ -27,8 +27,8 @@ public class UsuarioService {
         );
 	}
 	
-	public Usuario findByNome(String nomeUsuario) {
-		return uRep.findByNome(nomeUsuario).orElseThrow(
+	public Usuario findByEmail(String emailUsuario) {
+		return uRep.findByEmail(emailUsuario).orElseThrow(
                 () -> new ResourceNotFoundException()
         );
 	}

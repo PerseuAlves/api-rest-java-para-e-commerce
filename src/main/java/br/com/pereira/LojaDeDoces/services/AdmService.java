@@ -22,6 +22,12 @@ public class AdmService {
         );
 	}
 	
+	public Adm findByEmail(String emailAdm) {
+		return aRep.findByEmail(emailAdm).orElseThrow(
+                () -> new ResourceNotFoundException()
+        );
+	}
+	
 	public void save(Adm a) throws IllegalArgumentException {
 		validaAdm(a);
 		aRep.save(a);

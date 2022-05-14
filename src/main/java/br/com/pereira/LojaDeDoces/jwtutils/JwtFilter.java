@@ -33,10 +33,9 @@ public class JwtFilter extends OncePerRequestFilter {
 		String tokenHeader = request.getHeader("Authorization");
 		String username = null;
 		String token = null;
-
+		
 		if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
 			token = tokenHeader.substring(7);
-
 			try {
 				username = tokenManager.getUsernameFromToken(token);
 			} catch (IllegalArgumentException e) {
@@ -47,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		} else {
 			System.out.println("Bearer String not found in token");
 		}
-
+		
 		if (null != username && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -58,7 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 			}
 		}
-
+		
 		filterChain.doFilter(request, response);
 	}
 }

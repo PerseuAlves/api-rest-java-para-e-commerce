@@ -25,14 +25,14 @@ import lombok.Setter;
 @Table(name = "Produto")
 @NamedNativeQuery(
         name = "Produto.findAllByHighPrice",
-        query = "SELECT id, titulo, descricao, preco"
+        query = "SELECT id, titulo, descricao, preco, categoria1, categoria2, categoria3"
         		+ " FROM produto"
         		+ " ORDER BY preco DESC",
         resultClass = Produto.class
 )
 @NamedNativeQuery(
         name = "Produto.findAllByLowerPrice",
-        query = "SELECT id, titulo, descricao, preco"
+        query = "SELECT id, titulo, descricao, preco, categoria1, categoria2, categoria3"
         		+ " FROM produto"
         		+ " ORDER BY preco",
         resultClass = Produto.class
